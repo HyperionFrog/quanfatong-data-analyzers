@@ -9,6 +9,7 @@ __pycache__/
 .idea/
 output.txt
 result.txt
+wenshu.txt
 
 # Distribution / packaging
 .Python

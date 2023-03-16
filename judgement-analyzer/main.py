@@ -2,7 +2,6 @@ import pandas as pd
 import json
 from bs4 import BeautifulSoup
 
-from judgements_prework import *
 from entity_load import *
 from functools import *
 
@@ -103,5 +102,5 @@ def analyzeCourtInfo(input_path, output_path):
 
     f.close()
 
-
-analyzeCourtInfo("E:\wenshu_new2022docId11.txt", "result.txt")
+if __name__ == '__main__':
+    analyzeCourtInfo("assets/wenshu.txt", "output.txt")
