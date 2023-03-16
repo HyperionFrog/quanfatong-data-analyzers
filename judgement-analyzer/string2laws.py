@@ -1,3 +1,4 @@
+# Author: AlphaINF
 
 class string2laws:
     law_name = ""

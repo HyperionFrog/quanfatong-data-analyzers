@@ -1,3 +1,5 @@
+# Author: AlphaINF
+
 import codecs
 import re
 import json

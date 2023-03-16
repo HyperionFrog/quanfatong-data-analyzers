@@ -5,7 +5,7 @@ import re
 from cn2an import cn2an
 
 
-# 所有实现以可读性换性能为准则，不作过度优化
+# 所有实现遵循以可读性换性能的原则，不作过度优化
 class Chapter:
     id = 0
     name = ""
