@@ -4,7 +4,7 @@ import json
 from string2laws import string2laws
 
 def load_anyous():
-    with open("../files/anyou.txt", "r", encoding='utf-8') as f:
+    with open("../assets/anyou.txt", "r", encoding='utf-8') as f:
         data = json.load(f)
     text_list = [d['text'] for d in data]
     return text_list
