@@ -85,20 +85,9 @@ def analyzeCourtInfo(input_path, output_path):
 
     list_of_judgements = filter(None, map(processInfo, court_info))
 
-    #for val in list_of_judgements:
-
-    #print(list_of_judgements)
-
-    #df = pd.DataFrame(list_of_judgements)
-    #print(df)
-    #results = df.head(10).to_json(orient="records", force_ascii=False)
-
     f = open(output_path, "w", encoding="utf-8")
 
-    for line in list_of_judgements:
-        words = json.dumps(line, ensure_ascii=False)
-        f.write(words)
-        f.write('\n')
+    f.write(json.dumps(list(list_of_judgements), ensure_ascii=False, indent="\t"))
 
     f.close()
 
