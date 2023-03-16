@@ -48,7 +48,7 @@ def extractTitleAndContents(lines):
 
 
 def divideChapters(contents):
-    begin_idx, end_idx = -1, -1
+    begin_idx, end_idx = 0, 0
     chapter_pattern = re.compile("第\S+章\s+(\S+)")
     chapter_register = Chapter()
 
@@ -74,17 +74,20 @@ def divideChapters(contents):
 
 
 def divideSections(contents):
-    begin_idx, end_idx = -1, -1
+    begin_idx, end_idx = 0, 0
     section_pattern = re.compile("第\S+节\s+(\S+)")
     section_register = Section()
 
     sections = []
 
     def isStartOfSection(idx, contents):
-        return section_pattern.match(contents[idx])
+        return bool(section_pattern.match(contents[idx]))
 
     def isEndOfSection(idx, contents):
-        return contents[idx] == "" and section_pattern.match(contents[idx + 1])
+        try:
+            return bool(contents[idx] == "" and section_pattern.match(contents[idx + 1]) or (idx + 1) == len(contents))
+        except:
+            pass
 
     for idx, line in enumerate(contents):
         if isStartOfSection(idx, contents):
@@ -93,7 +96,7 @@ def divideSections(contents):
             section_register.name = section_pattern.match(line).group(1)
         elif isEndOfSection(idx, contents):
             end_idx = idx
-            section_register.contents = contents[begin_idx: end_idx]
+            section_register.contents = contents[begin_idx: end_idx + 1]
             sections.append(copy.deepcopy(section_register))
 
     if len(sections) == 0:
@@ -104,7 +107,7 @@ def divideSections(contents):
 
 
 def divideArticles(contents):
-    begin_idx, end_idx = -1, -1
+    begin_idx, end_idx = 0, 0
     article_pattern = re.compile("第(\S+)条\s+\S+")
     article_register = Article()
 
@@ -131,8 +134,6 @@ def divideArticles(contents):
 
 def parseLaw(lines):
     title, contents = extractTitleAndContents(lines)
-    for line in contents:
-        print(line)
     chapters = divideChapters(contents)
     dic = {}
     output = []
