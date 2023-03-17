@@ -26,8 +26,12 @@ def extractTitleAndContents(lines):
                 break
             else:
                 continue
+
     if end_idx == -1:
-        end_idx = title_idx
+        for idx, line in enumerate(lines):
+            if line.strip().startswith('第一'):
+                end_idx = idx - 1
+                break
 
     return title, lines[end_idx + 1:]
 
@@ -55,7 +59,7 @@ def parseLaw(lines):
 
 if __name__ == '__main__':
     output_path = "./output.txt"
-    doc = docx.Document("./assets/民法典.docx")
+    doc = docx.Document("./assets/企业职工带薪年休假实施办法.docx")
 
     stripped_lines = list(map(lambda x: x.text.lstrip(), doc.paragraphs))
     output = parseLaw(stripped_lines)
