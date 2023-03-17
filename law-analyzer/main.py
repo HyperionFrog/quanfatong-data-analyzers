@@ -7,7 +7,7 @@ from part_parser import parseParts
 
 def extractTitleAndContents(lines):
     begin_idx, end_idx, title_idx = -1, -1, -1
-    title_pattern = re.compile(r"法|条例")
+    title_pattern = re.compile(r"法|条例|解释|办法")
     title = ""
 
     for idx, line in enumerate(lines):
@@ -44,7 +44,7 @@ def parseLaw(lines):
                 for section in chapter.sections:
                     for article in section.articles:
                         dic["id"] = article.id
-                        dic["text"] = article.contents
+                        dic["text"] = list(filter(lambda x: x != "", article.contents))
                         dic["chapter_id"] = list(filter(None, [part.id, subpart.id, chapter.id, section.id]))
                         dic["hierarchy"] = list(filter(None, [part.name, subpart.name, chapter.name, section.name]))
                         dic["law"] = title
@@ -55,7 +55,7 @@ def parseLaw(lines):
 
 if __name__ == '__main__':
     output_path = "./output.txt"
-    doc = docx.Document("./assets/劳动合同法.docx")
+    doc = docx.Document("./assets/民法典.docx")
 
     stripped_lines = list(map(lambda x: x.text.lstrip(), doc.paragraphs))
     output = parseLaw(stripped_lines)
