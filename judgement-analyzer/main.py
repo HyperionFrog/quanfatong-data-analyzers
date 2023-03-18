@@ -1,13 +1,15 @@
 import pandas as pd
 import json
+import os
 from bs4 import BeautifulSoup
 
 from entity_load import *
 from functools import *
+from tqdm import tqdm
 
 
 def analyzeCourtInfo(input_path, output_path):
-    court_info = pd.read_csv(input_path, sep="\t")["CourtInfo"]
+    court_infos = pd.read_csv(input_path, sep="\t")["CourtInfo"]
 
     field_map = {
         "s1": "name",
@@ -22,9 +24,9 @@ def analyzeCourtInfo(input_path, output_path):
     #     , judge.get_complaint, judge.get_laws}
 
     def isJudgement(clean_info):
-        pattern = re.compile("判 决 书")
+        pattern = re.compile("判决书")
         try:
-            if pattern.search(clean_info["article"]):
+            if pattern.search(clean_info["s1"]):
                 return True
             else:
                 return False
@@ -41,23 +43,34 @@ def analyzeCourtInfo(input_path, output_path):
             return dict(filter(None, dict_with_empty_pairs))
 
         def appendArticle():
-            soup = BeautifulSoup(decoded_info["qwContent"], "lxml")
-            text_with_empty_elements = map(lambda x: x.string, soup.find_all("div") + soup.find_all("p"))
-            text = list(filter(None, text_with_empty_elements))
 
-            dic["article"] = reduce(lambda str1, str2: str1 + "\n" + str2, text)
+            soup = BeautifulSoup(decoded_info["qwContent"], "lxml")
+            line_elements = soup.find_all("div")
+            texts = []
+            for line in line_elements:
+                text = line.text
+                text = text.split('\n')
+                texts.extend(text)
+                #texts.append(text)
+
+            dic["article"] = texts
+
+
+            #soup = BeautifulSoup(decoded_info["qwContent"], 'html.parser').get_text()
+            #dic["article"] = soup
 
         def extractFieldsFromArticle():
-            judge = Judgenemt(dic["article"].split("\n"))
+            judge = Judgenemt(dic["article"])
             methods_for_fields = {
                 "plaintiff": judge.get_plaintiff,
                 "defendant": judge.get_defendant,
-                "claim": judge.get_claim,
-                "answer": judge.get_answer,
                 "case_type": judge.get_case_type,
-                "think": judge.get_think,
+                "claim": judge.get_claim,
                 "complaint": judge.get_complaint,
-                "laws": judge.get_laws
+                "answer": judge.get_answer,
+                "think": judge.get_think,
+                "laws": judge.get_laws,
+                "judge": judge.get_judge,
             }
 
             for key, func in methods_for_fields.items():
@@ -73,8 +86,8 @@ def analyzeCourtInfo(input_path, output_path):
         dic = extractFieldsFromCourtInfo()
         appendArticle()
 
-        if not isJudgement(dic):
-            return None
+        #if not isJudgement(dic):
+        #    return None
 
         try:
             extractFieldsFromArticle()
@@ -83,13 +96,22 @@ def analyzeCourtInfo(input_path, output_path):
 
         return dic
 
-    list_of_judgements = filter(None, map(processInfo, court_info))
+    list_of_judgements = []
+    for court_info in tqdm(court_infos):
+        out = processInfo(court_info)
+        list_of_judgements.append(out)
 
-    f = open(output_path, "w", encoding="utf-8")
+    list_of_judgements = list(filter(None,list_of_judgements))
 
-    f.write(json.dumps(list(list_of_judgements), ensure_ascii=False, indent="\t"))
-
-    f.close()
+    with open(output_path, "a", encoding="utf-8") as f:
+        for judgement in list_of_judgements:
+            json_line = json.dumps(judgement, ensure_ascii=False)
+            f.write(json_line + "\n")
 
 if __name__ == '__main__':
-    analyzeCourtInfo("assets/wenshu.txt", "output.txt")
+    assets_path = "./judge_input"
+    txt_files = [f for f in os.listdir(assets_path) if f.endswith('.txt')]
+    for txt_file in txt_files:
+        print(txt_file)
+        txt_path = os.path.join(assets_path, txt_file)
+        analyzeCourtInfo(txt_path, "output.txt")
