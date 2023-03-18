@@ -55,12 +55,33 @@ class Judgenemt:
 
                     break
 
+                if self.check_keywords(self.files[i], ['根', '《', '》', '第', '条', '判决如下']):
+                    #需要进行拆分
+                    yi_id = self.files[i].rfind('根')
+                    new_line = self.files[i][yi_id:]
+
+                    self.files[i] = self.files[i][:yi_id]
+                    self.files.insert(i+1, new_line)
+
+                    break
+
                 while True:
                     if self.check_keywords(self.files[i+1], ['依', '《', '》', '第', '条', '判决如下']):
+                        break
+                    if self.check_keywords(self.files[i+1], ['根', '《', '》', '第', '条', '判决如下']):
                         break
                     self.files[i] = self.files[i] + self.files[i+1]
                     self.files.pop(i+1)
                 break
+
+        #给原被告加冒号
+        for i in range(len(self.files)):
+            if self.check_keywords(self.files[i], ['一案']) or self.check_keywords(self.files[i], ['终结']):
+                break
+            if self.check_keywords(self.files[i], ['原告']) and (not self.check_keywords(self.files[i], ['原告：'])):
+                self.files[i] = self.files[i].replace('原告', '原告：')
+            if self.check_keywords(self.files[i], ['被告']) and (not self.check_keywords(self.files[i], ['被告：'])):
+                self.files[i] = self.files[i].replace('被告', '被告：')
 
         #一些符号的标准化
         for i in range(len(self.files)):
@@ -100,18 +121,25 @@ class Judgenemt:
         #return element
         for i in range(len(element)):
             if element[i].find('。')!=-1:
-                element[i] = element[i][:element.find('。')]
+                element[i] = element[i][:element[i].find('。')]
+            if element[i].find('，')!=-1:
+                element[i] = element[i][:element[i].find('，')]
+            if element[i].find('、')!=-1:
+                element[i] = element[i][:element[i].find('、')]
         return element
 
     def get_plaintiff(self):
-        return self.get_member_fixbug(self.get_info(['原告：'], '原告：', '，'))
+        return self.get_member_fixbug(self.get_info(['原告：'], '原告：'))
 
 
     def get_defendant(self):
-        return self.get_member_fixbug(self.get_info(['被告：'], '被告：', '，'))
+        return self.get_member_fixbug(self.get_info(['被告：'], '被告：'))
 
     def get_claim(self):
-        all = self.get_info(['诉讼请求', '事实', '理由'], '诉讼请求：', '事实')[0]
+        try:
+            all = self.get_info(['诉讼请求', '事实', '理由'], '诉讼请求：', '事实')[0]
+        except:
+            all = self.get_info(['诉讼请求'], '诉讼请求：')[0]
         #print(all)
 
         def find_id(text, num, start = 0):
@@ -144,7 +172,11 @@ class Judgenemt:
         return answer
 
     def get_complaint(self):
-        return self.get_info(['诉讼请求', '事实', '理由'], '理由：')[0]
+        try:
+            ret = self.get_info(['诉讼请求', '事实', '理由'], '理由：')[0]
+            return ret
+        except:
+            return ''
 
     def get_answer(self):
         return self.get_info(['辩称'], '辩称')
@@ -164,7 +196,14 @@ class Judgenemt:
         return answer
 
     def get_laws(self):
-        all = self.get_info(['依', '《', '》', '第', '条', '判决如下'], '依')[0]
+        try:
+            all = '依' + self.get_info(['依', '《', '》', '第', '条', '判决如下'], '依')[0]
+        except:
+            all = '依' + self.get_info(['根', '《', '》', '第', '条', '判决如下'], '跟')[0]
+        idr = all.rfind('判决如下')
+        all = all[:idr]
+        idr = all.rfind('依')
+        all = all[idr:]
         #print(all)
         #print(len(all))
 
@@ -193,7 +232,7 @@ class Judgenemt:
         return output
 
     def get_case_type(self):
-        all = self.get_info(['原告', '被告', '终结'], '被告', '一案')[0]
+        all = self.get_info(['案', '终结'], '', '案')[0]
         answer = ''
         for anyou in anyous:
             if all.find(anyou) != -1:

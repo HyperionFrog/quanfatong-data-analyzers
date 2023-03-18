@@ -33,7 +33,7 @@ def divideArticles(contents):
             end_idx = idx
             article_register.contents = contents[begin_idx: end_idx + 1]
             try:
-                text = re.match("第\S+条\s+(\S+)", article_register.contents[0]).group(1)
+                text = re.match("第\S+条\s+(\S+)", article_register.contents[0].replace(" ", "")).group(1)
                 article_register.contents[0] = text
             except:
                 pass
