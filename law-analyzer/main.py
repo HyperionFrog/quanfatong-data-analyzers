@@ -80,12 +80,12 @@ if __name__ == '__main__':
     with open(output_path, "w", encoding="utf-8") as f:
         for docx_file in docx_files:
             doc_path = os.path.join(assets_path, docx_file)
-            txt_path = os.path.join(assets_path, docx_file.removesuffix(".docx") + ".txt")
+            txt_file = docx_file.removesuffix(".docx") + ".txt"
 
             output = process_document(doc_path)
 
-            if txt_path in txt_files:
-                metadata = processRawText(txt_path)
+            if txt_file in txt_files:
+                metadata = processRawText(f"{assets_path}{txt_file}")
                 appendMetadata(output, metadata)
 
             # 将输出的 JSON 对象写入文件，以 JSONL 格式存储
