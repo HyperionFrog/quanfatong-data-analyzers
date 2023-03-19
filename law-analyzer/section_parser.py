@@ -20,7 +20,7 @@ def divideSections(contents):
         return section_pattern.match(contents[idx])
 
     def isEndOfSection(idx, contents):
-        return idx == len(contents) - 1 or contents[idx] == "" and section_pattern.match(contents[idx + 1])
+        return contents[idx] == "" and section_pattern.match(contents[idx + 1])
 
     def isEndOfContents(idx, contents):
         return idx == len(contents) - 1
@@ -36,10 +36,6 @@ def divideSections(contents):
                 end_idx += 1
             section_register.contents = contents[begin_idx: end_idx]
             sections.append(copy.deepcopy(section_register))
-
-    if len(sections) == 0:
-        section_register.contents = contents
-        sections.append(copy.deepcopy(section_register))
 
     return sections
 

@@ -18,7 +18,7 @@ def divideArticles(contents):
         return article_pattern.match(contents[idx])
 
     def isEndOfArticle(idx, contents):
-        return idx == len(contents) - 1 or article_pattern.match(contents[idx + 1])
+        return article_pattern.match(contents[idx + 1])
 
     def isEndOfContents(idx, contents):
         return idx == len(contents) - 1
