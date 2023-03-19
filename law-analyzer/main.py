@@ -50,7 +50,7 @@ def parseLaw(lines):
                     for article in section.articles:
                         dic["id"] = article.id
                         dic["text"] = list(filter(lambda x: x != "", article.contents))
-                        dic["chapter_id"] = list(filter(None, [part.id, subpart.id, chapter.id, section.id]))
+                        dic["hierarchy_ids"] = list(filter(None, [part.id, subpart.id, chapter.id, section.id]))
                         dic["hierarchy"] = list(filter(None, [part.name, subpart.name, chapter.name, section.name]))
                         dic["law"] = title
                         output.append(copy.deepcopy(dic))
@@ -64,8 +64,8 @@ def process_document(doc_path):
     return parseLaw(stripped_lines)
 
 
-def appendMetadata(json_obj, metadata):
-    for element, metadata in zip(json_obj, metadata):
+def appendMetadata(json_data, json_metadata):
+    for element, metadata in zip(json_data, json_metadata):
         element["is_active"] = metadata["is_active"]
 
 
@@ -78,12 +78,15 @@ if __name__ == '__main__':
     txt_files = [f for f in os.listdir(assets_path) if f.endswith('.txt')]
 
     with open(output_path, "w", encoding="utf-8") as f:
-        for docx_file, txt_file in zip(docx_files, txt_files):
+        for docx_file in docx_files:
             doc_path = os.path.join(assets_path, docx_file)
-            txt_path = f"{assets_path}{txt_file}"
+            txt_path = os.path.join(assets_path, docx_file.removesuffix(".docx") + ".txt")
+
             output = process_document(doc_path)
-            metadata = processRawText(txt_path)
-            appendMetadata(output, metadata)
+
+            if txt_path in txt_files:
+                metadata = processRawText(txt_path)
+                appendMetadata(output, metadata)
 
             # 将输出的 JSON 对象写入文件，以 JSONL 格式存储
             for item in output:
