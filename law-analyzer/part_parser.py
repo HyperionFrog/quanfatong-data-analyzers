@@ -26,16 +26,13 @@ def divideParts(contents):
         return idx == len(contents) - 1
 
     for idx, line in enumerate(contents):
-        if idx == 448:
-            pass
-
         if isStartOfPart(idx, contents):
             begin_idx = idx + 2
             part_register.id += 1
             part_register.name = part_pattern.match(line).group(1)
         elif isEndOfContents(idx, contents) or isEndOfPart(idx, contents):
             end_idx = idx
-            if (isEndOfContents(idx, contents)):
+            if isEndOfContents(idx, contents):
                 end_idx += 1
             part_register.contents = contents[begin_idx: end_idx]
             parts.append(copy.deepcopy(part_register))

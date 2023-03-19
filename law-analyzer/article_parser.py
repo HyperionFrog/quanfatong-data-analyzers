@@ -27,8 +27,6 @@ def divideArticles(contents):
         if isStartOfArticle(idx, contents):
             begin_idx = idx
             article_register.id = cn2an(article_pattern.match(line).group(1))
-            if article_register.id == 1164:
-                pass
         if isEndOfContents(idx, contents) or isEndOfArticle(idx, contents):
             end_idx = idx
             article_register.contents = contents[begin_idx: end_idx + 1]
