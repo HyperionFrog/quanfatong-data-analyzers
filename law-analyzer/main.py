@@ -19,14 +19,10 @@ def extractTitleAndContents(lines):
                     title_idx = idx
             elif (line == "目　　录"):
                 begin_idx = idx + 1
-            else:
-                continue
         else:
             if (line == ""):
                 end_idx = idx
                 break
-            else:
-                continue
 
     if end_idx == -1:
         for idx, line in enumerate(lines):

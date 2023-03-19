@@ -34,7 +34,7 @@ def divideArticles(contents):
                 text = re.match("第\S+条\s+(\S+)", article_register.contents[0].replace(" ", "")).group(1)
                 article_register.contents[0] = text
             except:
-                pass
+                print("Something goes wrong")
             articles.append(copy.deepcopy(article_register))
 
     return articles
