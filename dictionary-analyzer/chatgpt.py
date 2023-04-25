@@ -5,32 +5,48 @@ import openai
 os.environ["HTTP_PROXY"] = "127.0.0.1:2081"
 os.environ["HTTPS_PROXY"] = "127.0.0.1:2081"
 
-openai.api_key = "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"
-
-
-instructions = open("instructions.txt", "r", encoding="utf-8").read()
-
 
 class ChatGPT:
+    keys = [
+        "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",
+        "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",
+        "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",
+        "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"
+    ]
+    key_idx = 0
+
+    instructions = open("instructions.txt", "r", encoding="utf-8").read()
+
     def __init__(self, conversation_list=[]) -> None:
         self.conversation_list = conversation_list
         self.conversation_list.append({"role": "user",
-                                       "content": instructions})
+                                       "content": self.instructions})
+        openai.api_key = self.keys[1]
+
+    def switchKey(self):
+        self.key_idx += 1
+
+        if self.key_idx >= len(self.keys):
+            self.key_idx = 0
+
+        openai.api_key = self.keys[self.key_idx]
 
     def respond(self, prompt):
         self.conversation_list.append({"role": "user",
                                        "content": prompt})
 
-        response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.conversation_list)
-        msg = response.choices[0].message['content']
-        self.conversation_list.append({"role": "assistant", "content": msg})
+        while True:
+            try:
+                response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.conversation_list)
+                msg = response.choices[0].message['content']
+                self.conversation_list.append({"role": "assistant", "content": msg})
 
-        return msg
+                if len(self.conversation_list) > 2:
+                    self.conversation_list = [self.conversation_list[0]]
 
-#
-# bot = ChatGPT()
-#
-# while True:
-#     message = input(f"\U0001f47b: ")
-#     output_msg = f"\U0001f47D: {bot.respond(message)}"
-#     print(output_msg)
+                return msg
+            except openai.error.RateLimitError:
+                print("Try another key\n")
+                self.switchKey()
+            except openai.error.APIConnectionError:
+                print("Poor internet connection, retrying\n")
