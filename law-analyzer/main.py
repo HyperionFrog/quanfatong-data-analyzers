@@ -66,8 +66,8 @@ def appendMetadata(json_data, json_metadata):
 
 
 if __name__ == '__main__':
-    assets_path = "./assets/"
-    output_path = "./output.txt"
+    assets_path = "../law-analyzer/assets/"
+    output_path = "../law-analyzer/output.txt"
 
     # 获取目录下所有的 .docx 文件
     docx_files = [f for f in os.listdir(assets_path) if f.endswith('.docx')]
