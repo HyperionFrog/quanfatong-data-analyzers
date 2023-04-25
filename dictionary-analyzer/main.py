@@ -32,9 +32,10 @@ def save():
 
 def reload():
     global output, lines
-    previous_answers = json.loads(open(f"./assets/output_{version}.txt", "r", encoding="utf-8").read())
-    output = previous_answers
-    lines = lines[len(output):]
+    if version > 0:
+        previous_answers = json.loads(open(f"./assets/output_{version}.txt", "r", encoding="utf-8").read())
+        output = previous_answers
+        lines = lines[len(output):]
 
 
 def askGPT():

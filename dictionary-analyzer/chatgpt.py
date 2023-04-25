@@ -21,7 +21,7 @@ class ChatGPT:
         self.conversation_list = conversation_list
         self.conversation_list.append({"role": "user",
                                        "content": self.instructions})
-        openai.api_key = self.keys[1]
+        openai.api_key = self.keys[2]
 
     def switchKey(self):
         self.key_idx += 1
