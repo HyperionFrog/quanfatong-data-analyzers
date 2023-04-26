@@ -8,10 +8,7 @@ os.environ["HTTPS_PROXY"] = "127.0.0.1:2081"
 
 class ChatGPT:
     keys = [
-        "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",
-        "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",
-        "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",
-        "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"
+
     ]
     key_idx = 0
 

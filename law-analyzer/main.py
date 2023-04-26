@@ -2,8 +2,7 @@ import json, docx, re, copy, os
 from part_parser import parseParts
 from raw_text_processor import processRawText
 
-
-# 所有实现遵循以可读性换性能的原则，不作过度优化
+# 所有实现优先考虑可读性，不作过度优化
 
 
 def extractTitleAndContents(lines):

@@ -6,7 +6,7 @@ doc = docx.Document("辞典.docx")
 
 stripped_lines = list(filter(None, map(lambda line: line.text.rstrip(), doc.paragraphs)))
 
-menu_file = open("目录.txt", "r", encoding="utf-8")
+menu_file = open("menu.txt", "r", encoding="utf-8")
 menu = list(map(lambda line: line.rstrip(), menu_file.readlines()))
 
 title_file = open("titles.txt", "r", encoding="utf-8")
