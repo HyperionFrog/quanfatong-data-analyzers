@@ -4,7 +4,6 @@ import os
 from bs4 import BeautifulSoup
 
 from entity_load import *
-from functools import *
 from tqdm import tqdm
 
 
