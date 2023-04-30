@@ -1,4 +1,6 @@
 import json, docx, re, copy, os
+from functools import reduce
+import operator
 
 # 所有实现遵循以可读性换性能的原则，不作过度优化
 
@@ -64,8 +66,8 @@ def pairChoiceWithArticles(choice_explanation_pair):
 
 
 def constructLawsField(problem):
-    choice_explanation_pairs = list(filter(None, map(pairChoiceWithExplanation, problem['jiexi'].split('\n'))))
-    choice_explanation_pairs = sum(choice_explanation_pairs, [])  # sum(some_list, []) flattens a list
+    choice_explanation_pairs = filter(None, map(pairChoiceWithExplanation, problem['jiexi'].split('\n')))
+    choice_explanation_pairs = reduce(operator.iconcat, choice_explanation_pairs, []) # flatten the list
 
     try:
         choice_articles_pairs = list(map(pairChoiceWithArticles, choice_explanation_pairs))
@@ -82,8 +84,8 @@ with open("assets/LawData.json", "r", encoding="utf-8") as file:
     problems = json.loads(file.read())
     file.close()
 
-problems = list(map(splitAnswers, problems))
-problems = list(map(splitChoices, problems))
+problems = map(splitAnswers, problems)
+problems = map(splitChoices, problems)
 problems = list(filter(None, map(constructLawsField, problems)))
 
 with open("output.json", "w", encoding="utf-8") as file:
