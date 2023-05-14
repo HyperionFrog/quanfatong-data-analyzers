@@ -67,7 +67,7 @@ def pairChoiceWithArticles(choice_explanation_pair):
 
 def constructLawsField(problem):
     choice_explanation_pairs = filter(None, map(pairChoiceWithExplanation, problem['jiexi'].split('\n')))
-    choice_explanation_pairs = reduce(operator.iconcat, choice_explanation_pairs, []) # flatten the list
+    choice_explanation_pairs = reduce(operator.iconcat, choice_explanation_pairs, [])  # flatten the list
 
     try:
         choice_articles_pairs = list(map(pairChoiceWithArticles, choice_explanation_pairs))
@@ -80,14 +80,15 @@ def constructLawsField(problem):
     return problem
 
 
-with open("assets/LawData.json", "r", encoding="utf-8") as file:
-    problems = json.loads(file.read())
-    file.close()
+if __name__ == '__main__':
+    with open("assets/LawData.json", "r", encoding="utf-8") as file:
+        problems = json.loads(file.read())
+        file.close()
 
-problems = map(splitAnswers, problems)
-problems = map(splitChoices, problems)
-problems = list(filter(None, map(constructLawsField, problems)))
+    problems = map(splitAnswers, problems)
+    problems = map(splitChoices, problems)
+    problems = list(filter(None, map(constructLawsField, problems)))
 
-with open("output.json", "w", encoding="utf-8") as file:
-    file.write(json.dumps(problems, ensure_ascii=False, indent="\t"))
-    file.close()
+    with open("output.json", "w", encoding="utf-8") as file:
+        file.write(json.dumps(problems, ensure_ascii=False, indent="\t"))
+        file.close()
